@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Subscription Plans{% endblock %}
+
+{% block content %}
+    {% include "navbar.html" %}
+    <h1>Our Subscription Plans</h1>
+    <p>Enjoy fresh baked goods delivered right to your door!</p>
+
+    <div class="subscription-plans">
+        <div class="plan-card">
+            <h2>Weekly Plan</h2>
+            <p class="plan-price">$25/week</p>
+            <ul>
+                <li>1 fresh item daily (Mon-Fri)</li>
+                <li>Exclusive weekly specials</li>
+                <li>Free delivery</li>
+            </ul>
+            <button class="btn btn-success">Subscribe Weekly</button>
+        </div>
+
+        <div class="plan-card">
+            <h2>Monthly Plan</h2>
+            <p class="plan-price">$90/month</p>
+            <ul>
+                <li>All Weekly Plan benefits</li>
+                <li>Weekend bonus item</li>
+                <li>Priority access to new items</li>
+            </ul>
+            <button class="btn btn-success">Subscribe Monthly</button>
+        </div>
+
+        <div class="plan-card">
+            <h2>Festive Offers</h2>
+            <p class="plan-price">Custom Pricing</p>
+            <ul>
+                <li>Special holiday bundles</li>
+                <li>Limited edition items</li>
+                <li>Perfect for gifting</li>
+            </ul>
+            <button class="btn btn-success">Inquire for Festive</button>
+        </div>
+    </div>
+{% endblock %}

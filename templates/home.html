@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Bakery Shop{% endblock %}
+
+{% block content %}
+    {# Apply the specific class for home page styling #}
+    <div class="container home-page-container">
+        {# Navbar is conditionally included in base.html based on login status.
+           For the home page when not logged in, we don't need a full navbar,
+           but we'll keep the flash messages. #}
+        <div class="flashes">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <div class="hero-section">
+            <h1>Welcome to Our Bakery!</h1>
+            <p>Freshly baked goods, made with love.</p>
+            <p class="info-text">Please log in or register to browse our delicious items!</p>
+            <a href="{{ url_for('login') }}" class="btn btn-primary">Login Now</a>
+            <a href="{{ url_for('register') }}" class="btn btn-secondary mt-3">Register</a>
+        </div>
+        <div class="info-section">
+            <h2>About Us</h2>
+            <p>We are dedicated to bringing you the finest pastries, breads, and desserts. Every item is crafted with high-quality ingredients and a passion for baking.</p>
+            <h2>Our Specialities</h2>
+            <ul>
+                <li>Artisan Breads</li>
+                <li>Gourmet Cakes</li>
+                <li>Delightful Pastries</li>
+                <li>Custom Order Desserts</li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    /* Specific styles for the home page container */
+    .home-page-container {
+        background: linear-gradient(135deg, #FFF8DC, #FFD700); /* Cream to Gold gradient */
+        color: #333; /* Dark text for light background */
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3), 0 0 60px rgba(255, 223, 0, 0.5), 0 0 100px rgba(255, 223, 0, 0.3); /* Gold aura glow */
+        border: 1px solid rgba(255, 223, 0, 0.3); /* Subtle gold border */
+        backdrop-filter: blur(2px); /* Lighter blur for lighter background */
+        -webkit-backdrop-filter: blur(2px);
+    }
+
+    .home-page-container h1, .home-page-container h2 {
+        color: #8B4513; /* SaddleBrown for headings */
+        text-shadow: 0 0 10px rgba(255, 223, 0, 0.8); /* Stronger gold glow */
+    }
+
+    .home-page-container p, .home-page-container ul li {
+        color: #555; /* Darker text for readability */
+    }
+    
+    .home-page-container .info-text {
+        color: #777;
+    }
+
+    .home-page-container .hero-section {
+        background: rgba(255, 255, 255, 0.7); /* Lighter background for hero section */
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+    .home-page-container .hero-section h1 {
+        color: #8B4513;
+        text-shadow: 0 0 10px rgba(255, 223, 0, 0.6);
+    }
+    .home-page-container .hero-section p {
+        color: #666;
+    }
+
+    .home-page-container .info-section {
+        background-color: rgba(255, 255, 255, 0.6); /* Lighter background for info section */
+    }
+    .home-page-container .info-section h2 {
+        color: #8B4513;
+    }
+    .home-page-container .info-section p, .home-page-container .info-section ul li {
+        color: #555;
+    }
+
+    /* Adjust buttons for gold theme */
+    .home-page-container .btn-primary {
+        background: linear-gradient(145deg, #FFD700, #DAA520); /* Gold gradient */
+        color: #333; /* Dark text on gold */
+    }
+    .home-page-container .btn-primary:hover {
+        background: linear-gradient(145deg, #FFEA00, #F0C420);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), 0 0 25px rgba(255, 223, 0, 0.7);
+    }
+    .home-page-container .btn-secondary { /* For Register button */
+        background: linear-gradient(145deg, #E0E0E0, #C0C0C0); /* Light grey gradient */
+        color: #333;
+    }
+    .home-page-container .btn-secondary:hover {
+        background: linear-gradient(145deg, #F0F0F0, #D0D0D0);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Flash messages on home page */
+    .home-page-container .flashes .alert {
+        color: #333; /* Darker text for alerts on light background */
+        background-color: rgba(255, 255, 255, 0.8);
+        border-color: rgba(255, 223, 0, 0.5);
+    }
+    .home-page-container .flashes .alert-success { border-color: #34a853; }
+    .home-page-container .flashes .alert-danger { border-color: #ea4335; }
+    .home-page-container .flashes .alert-warning { border-color: #ffcc00; }
+    .home-page-container .flashes .alert-info { border-color: #4285f4; }
+
+</style>
+{% endblock %}

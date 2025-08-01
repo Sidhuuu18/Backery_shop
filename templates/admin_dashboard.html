@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+    {% include "navbar.html" %}
+    <div class="admin-header">
+        <h1>Admin Dashboard</h1>
+        <div class="admin-actions">
+            <a href="{{ url_for('admin_logout') }}" class="btn btn-danger btn-small">Admin Logout</a>
+            <a href="{{ url_for('download_users_data') }}" class="btn btn-primary btn-small">Download User Data (Excel)</a>
+            <a href="{{ url_for('admin_add_item') }}" class="btn btn-success btn-small">Add New Bakery Item</a>
+        </div>
+    </div>
+
+    <h2>Registered Users</h2>
+    {% if users %}
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        {% for col in user_columns %}
+                        <th>{{ col.replace('_', ' ').title() }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        {% for col in user_columns %}
+                        <td>{{ user[col] if user[col] is not none else 'N/A' }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="info-text">No registered users found in MongoDB.</p>
+    {% endif %}
+
+    <h2 class="mt-5">Bakery Items</h2>
+    {% if bakery_items %}
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Category</th>
+                        <th>Media URL</th>
+                        <th>Rating</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in bakery_items %}
+                    <tr>
+                        <td>{{ item._id }}</td>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.description }}</td>
+                        <td>${{ "%.2f"|format(item.price) }}</td>
+                        <td>{{ item.category }}</td>
+                        <td>
+                            {% if item.media_url %}
+                                <a href="{{ item.media_url }}" target="_blank">View Media</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>{{ "%.1f"|format(item.rating) }}</td>
+                        <td>{{ item.createdAt.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>
+                            <a href="{{ url_for('admin_edit_item', item_id=item._id) }}" class="btn btn-primary btn-small">Edit</a>
+                            <form action="{{ url_for('admin_delete_item', item_id=item._id) }}" method="POST" style="display:inline-block; margin-left: 5px;">
+                                <button type="submit" class="btn btn-danger btn-small" onclick="return confirm('Are you sure you want to delete this item?');">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="info-text">No bakery items found in MongoDB. <a href="{{ url_for('admin_add_item') }}">Add one now!</a></p>
+    {% endif %}
+
+{% endblock %}

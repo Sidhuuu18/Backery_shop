@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    {# Apply the specific class for login page styling #}
+    <div class="container login-page-container">
+        <h1>Login</h1>
+        {# This line was causing the error when 'errors' was not passed. Now it's always passed. #}
+        {% if errors.general %}<span class="error">{{ errors.general }}</span>{% endif %}
+        <form action="{{ url_for('login') }}" method="POST">
+            <div class="form-group">
+                <label for="identifier">Username or Email:</label>
+                <input type="text" id="identifier" name="identifier" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+        <div class="separator">OR</div>
+        <div class="social-login-buttons">
+            <a href="{{ url_for('oauth_google') }}" class="btn btn-google">
+                <i class="fab fa-google social-icon"></i> Login with Google
+            </a>
+            <a href="{{ url_for('oauth_facebook') }}" class="btn btn-facebook">
+                <i class="fab fa-facebook-f social-icon"></i> Login with Facebook
+            </a>
+            <a href="{{ url_for('oauth_github') }}" class="btn btn-github">
+                <i class="fab fa-github social-icon"></i> Login with GitHub
+            </a>
+        </div>
+        <p class="mt-3 text-center">Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+        <p class="mt-3 text-center">Admin? <a href="{{ url_for('admin_login') }}">Admin Login</a></p>
+    </div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    /* Specific styles for the login page container */
+    .login-page-container {
+        background: linear-gradient(135deg, #4B0082, #8A2BE2); /* Indigo to Blue Violet gradient */
+        color: #fff; /* White text for dark background */
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 60px rgba(138, 43, 226, 0.5), 0 0 100px rgba(218, 112, 214, 0.3); /* Purple/Orchid aura glow */
+        border: 1px solid rgba(255, 255, 255, 0.15); /* Subtle white border */
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+    }
+
+    .login-page-container h1 {
+        color: #E6E6FA; /* Lavender blush for heading */
+        text-shadow: 0 0 10px rgba(138, 43, 226, 0.8), 0 0 20px rgba(218, 112, 214, 0.6); /* Stronger purple glow */
+    }
+
+    .login-page-container label {
+        color: #DDA0DD; /* Plum for labels */
+    }
+
+    .login-page-container input[type="text"],
+    .login-page-container input[type="password"],
+    .login-page-container input[type="email"] {
+        background-color: rgba(255, 255, 255, 0.1); /* More transparent input background */
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #fff;
+    }
+    .login-page-container input[type="text"]:focus,
+    .login-page-container input[type="password"]:focus,
+    .login-page-container input[type="email"]:focus {
+        background-color: rgba(255, 255, 255, 0.2);
+        border-color: #DA70D6; /* Orchid border on focus */
+        box-shadow: 0 0 0 3px rgba(218, 112, 214, 0.4); /* Orchid glow on focus */
+    }
+    .login-page-container input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .login-page-container .btn-primary {
+        background: linear-gradient(145deg, #8A2BE2, #9370DB); /* Blue Violet to Medium Purple gradient */
+    }
+    .login-page-container .btn-primary:hover {
+        background: linear-gradient(145deg, #9932CC, #BA55D3); /* Dark Orchid to Medium Orchid */
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 25px rgba(138, 43, 226, 0.6);
+    }
+
+    .login-page-container .social-login-buttons .btn {
+        background-color: #fff; /* White background for social buttons */
+        color: #333; /* Dark text */
+        border: 1px solid rgba(0, 0, 0, 0.2);
+    }
+    .login-page-container .social-login-buttons .btn:hover {
+        background-color: #f0f0f0;
+    }
+
+    .login-page-container .separator {
+        color: rgba(255, 255, 255, 0.6);
+    }
+    .login-page-container .separator::before,
+    .login-page-container .separator::after {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .login-page-container a {
+        color: #DA70D6; /* Orchid for links */
+    }
+    .login-page-container a:hover {
+        color: #EE82EE; /* Violet for links on hover */
+    }
+
+    /* Flash messages on login page */
+    .login-page-container .flashes .alert {
+        color: #fff; /* White text for alerts on dark background */
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+    .login-page-container .flashes .alert-success { border-color: #98fb98; }
+    .login-page-container .flashes .alert-danger { border-color: #ff8c8c; }
+    .login-page-container .flashes .alert-warning { border-color: #ffeb3b; }
+    .login-page-container .flashes .alert-info { border-color: #a0c4ff; }
+</style>
+{% endblock %}

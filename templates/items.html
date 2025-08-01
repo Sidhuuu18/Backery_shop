@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Bakery Items{% endblock %}
+
+{% block content %}
+    {% include "navbar.html" %}
+    <h1>Our Delicious Items</h1>
+    <div class="search-filter-section">
+        <input type="text" id="search-input" placeholder="Search items by name or description..." value="{{ current_search }}">
+        <select id="filter-select">
+            <option value="">All Categories</option>
+            {% for category in all_categories %}
+                <option value="{{ category }}" {% if current_category == category %}selected{% endif %}>{{ category }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="item-list">
+        {% if items %}
+            {% for item in items %}
+                <div class="item-card">
+                    <img src="{{ item.media_url }}" alt="{{ item.name }}" class="item-image" onerror="this.onerror=null;this.src='https://placehold.co/400x300/cccccc/000000?text=No+Image';">
+                    <h3>{{ item.name }}</h3>
+                    <p class="item-description">{{ item.description }}</p>
+                    <p class="item-price">Price: ${{ "%.2f"|format(item.price) }}</p>
+                    <div class="item-rating">Rating: {{ "%.1f"|format(item.rating) }} / 5</div>
+                    {# Add to Cart Form #}
+                    <form action="{{ url_for('add_to_cart', item_id=item._id) }}" method="POST" class="add-to-cart-form">
+                        <button type="submit" class="btn btn-primary btn-small">Add to Cart</button>
+                    </form>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="info-text">No bakery items available matching your criteria. Try adjusting your search or filters!</p>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('search-input');
+        const filterSelect = document.getElementById('filter-select');
+
+        function applyFilters() {
+            const searchQuery = searchInput.value;
+            const categoryFilter = filterSelect.value;
+            let url = '{{ url_for("items_page") }}';
+            const params = new URLSearchParams();
+
+            if (searchQuery) {
+                params.append('search', searchQuery);
+            }
+            if (categoryFilter) {
+                params.append('category', categoryFilter);
+            }
+
+            if (params.toString()) {
+                url += '?' + params.toString();
+            }
+            window.location.href = url;
+        }
+
+        let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(applyFilters, 500);
+        });
+
+        filterSelect.addEventListener('change', applyFilters);
+    });
+</script>
+{% endblock %}

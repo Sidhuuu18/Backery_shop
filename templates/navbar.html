@@ -1,0 +1,21 @@
+<nav class="navbar">
+    <a href="{{ url_for('index') }}" class="navbar-brand">Bakery Shop</a>
+    <ul class="navbar-nav">
+        <li><a href="{{ url_for('index') }}">Home</a></li>
+        <li><a href="{{ url_for('items_page') }}">Items</a></li>
+        <li><a href="{{ url_for('contact_page') }}">Contact</a></li>
+        <li><a href="{{ url_for('subscription_page') }}">Subscription</a></li>
+        <li><a href="{{ url_for('payment_page') }}">Payment</a></li>
+        <li><a href="{{ url_for('qrcode_generator_page') }}">QR Code Generator</a></li>
+        {# Cart Link with item count #}
+        <li><a href="{{ url_for('view_cart') }}">Cart ({{ session.get('cart', []) | length }})</a></li>
+        {% if session.get('is_admin') %}
+        <li><a href="{{ url_for('admin_dashboard') }}">Admin Panel</a></li>
+        {% endif %}
+        {% if session.get('logged_in') %}
+        <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        {% else %}
+        <li><a href="{{ url_for('login') }}">Login</a></li>
+        {% endif %}
+    </ul>
+</nav>

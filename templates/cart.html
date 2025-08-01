@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Your Shopping Cart{% endblock %}
+
+{% block content %}
+    {% include "navbar.html" %}
+    <h1>Your Shopping Cart</h1>
+
+    {% if cart_items %}
+        <div class="cart-items-list">
+            {% for item in cart_items %}
+                <div class="cart-item-card">
+                    <img src="{{ item.media_url }}" alt="{{ item.name }}" class="cart-item-image" onerror="this.onerror=null;this.src='https://placehold.co/100x100/cccccc/000000?text=No+Image';">
+                    <div class="cart-item-details">
+                        <h3>{{ item.name }}</h3>
+                        <p>Price: ${{ "%.2f"|format(item.price) }}</p>
+                        <form action="{{ url_for('update_cart_item', item_id=item._id) }}" method="POST" class="update-quantity-form">
+                            <label for="quantity-{{ item._id }}">Quantity:</label>
+                            <input type="number" id="quantity-{{ item._id }}" name="quantity" value="{{ item.quantity }}" min="1" class="quantity-input">
+                            <button type="submit" class="btn btn-primary btn-small">Update</button>
+                        </form>
+                        <form action="{{ url_for('remove_from_cart', item_id=item._id) }}" method="POST" style="display:inline-block; margin-left: 10px;">
+                            <button type="submit" class="btn btn-danger btn-small">Remove</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="cart-summary">
+            <h2>Cart Total: ${{ "%.2f"|format(total_price) }}</h2>
+            <form action="{{ url_for('clear_cart') }}" method="POST" style="display:inline-block; margin-right: 10px;">
+                <button type="submit" class="btn btn-danger">Clear Cart</button>
+            </form>
+            {# Changed to a form submission to payment_page #}
+            <form action="{{ url_for('payment_page') }}" method="GET" style="display:inline-block;">
+                <button type="submit" class="btn btn-success">Proceed to Checkout</button>
+            </form>
+        </div>
+    {% else %}
+        <p class="info-text">Your cart is empty. <a href="{{ url_for('items_page') }}">Start shopping now!</a></p>
+    {% endif %}
+{% endblock %}
+
+{% block styles %}
+<style>
+    .cart-items-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 30px;
+    }
+    .cart-item-card {
+        background-color: rgba(255, 255, 255, 0.08);
+        border-radius: 15px;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    }
+    .cart-item-image {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .cart-item-details {
+        flex-grow: 1;
+    }
+    .cart-item-details h3 {
+        margin-top: 0;
+        margin-bottom: 5px;
+        color: #e0e0e0;
+        font-size: 1.4em;
+    }
+    .cart-item-details p {
+        margin-bottom: 10px;
+        color: #c0c0c0;
+    }
+    .quantity-input {
+        width: 60px;
+        padding: 8px;
+        margin-right: 10px;
+        background-color: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        color: #ffffff;
+    }
+    .cart-summary {
+        margin-top: 40px;
+        padding: 25px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+    }
+    .cart-summary h2 {
+        color: #98fb98;
+        margin-bottom: 20px;
+        font-size: 2em;
+    }
+    .cart-summary .btn {
+        width: auto;
+        padding: 12px 25px;
+        font-size: 1.05em;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+        .cart-item-card {
+            flex-direction: column;
+            text-align: center;
+        }
+        .cart-item-details {
+            text-align: center;
+        }
+        .cart-item-image {
+            margin-bottom: 10px;
+        }
+        .update-quantity-form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .quantity-input {
+            margin-right: 5px;
+        }
+        .cart-summary .btn {
+            margin-top: 10px;
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Bakery Item - Admin{% endblock %}
+
+{% block content %}
+    {% include "navbar.html" %}
+    <h1>Edit Bakery Item</h1>
+    <form action="{{ url_for('admin_edit_item', item_id=item._id) }}" method="POST">
+        {% if errors.general %}<span class="error">{{ errors.general }}</span>{% endif %}
+        <div class="form-group">
+            <label for="name">Item Name:</label>
+            <input type="text" id="name" name="name" value="{{ item.name }}" required>
+            {% if errors.name %}<span class="error">{{ errors.name }}</span>{% endif %}
+        </div>
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" rows="4" required>{{ item.description }}</textarea>
+            {% if errors.description %}<span class="error">{{ errors.description }}</span>{% endif %}
+        </div>
+        <div class="form-group">
+            <label for="price">Price ($):</label>
+            <input type="number" id="price" name="price" step="0.01" min="0.01" value="{{ item.price }}" required>
+            {% if errors.price %}<span class="error">{{ errors.price }}</span>{% endif %}
+        </div>
+        <div class="form-group">
+            <label for="category">Category:</label>
+            <input type="text" id="category" name="category" value="{{ item.category }}" placeholder="e.g., Pastry, Bread, Cake" required>
+            {% if errors.category %}<span class="error">{{ errors.category }}</span>{% endif %}
+        </div>
+        <div class="form-group">
+            <label for="media_url">Image/Video URL (Optional):</label>
+            <input type="url" id="media_url" name="media_url" value="{{ item.media_url }}" placeholder="e.g., https://example.com/image.jpg">
+            {% if errors.media_url %}<span class="error">{{ errors.media_url }}</span>{% endif %}
+        </div>
+        <div class="form-group">
+            <label for="rating">Rating (0-5):</label>
+            <input type="number" id="rating" name="rating" step="0.1" min="0" max="5" value="{{ item.rating }}">
+            {% if errors.rating %}<span class="error">{{ errors.rating }}</span>{% endif %}
+        </div>
+        <button type="submit" class="btn btn-success">Update Item</button>
+    </form>
+    <p class="mt-3 text-center"><a href="{{ url_for('admin_dashboard') }}">Back to Admin Dashboard</a></p>
+{% endblock %}

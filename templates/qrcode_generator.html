@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}QR Code Generator{% endblock %}
+
+{% block content %}
+    {% include "navbar.html" %}
+    <h1>Order QR Code Generator</h1>
+    <p>Scan this QR code for your order details!</p>
+
+    <div id="qrcode-output" class="mt-3 text-center">
+        <!-- QR Code will be displayed here -->
+        <canvas id="qr-canvas" style="display: none;"></canvas>
+        <a id="download-qr-btn" class="btn btn-success mt-3" style="display: none;" download="order_qrcode.png">Download QR Code</a>
+    </div>
+
+    {# Manual input form as a fallback. Its visibility will now be controlled by JavaScript. #}
+    <form class="qr-form" id="manual-qr-form">
+        <p class="info-text mt-4">Or, enter details manually:</p>
+        <div class="form-group">
+            <label for="order-id">Order ID:</label>
+            <input type="text" id="order-id" name="order_id" value="{{ order_id if order_id else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="order-summary">Order Summary (e.g., "2 Croissants, 1 Latte"):</label>
+            <textarea id="order-summary" name="order_summary" rows="5" required>{{ order_data if order_data else '' }}</textarea>
+        </div>
+        <button type="button" class="btn btn-primary" id="generate-qr-btn">Generate QR Code Manually</button>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const qrCanvas = document.getElementById('qr-canvas');
+        const downloadBtn = document.getElementById('download-qr-btn');
+        const manualForm = document.getElementById('manual-qr-form');
+        const manualGenerateBtn = document.getElementById('generate-qr-btn');
+        const orderIdInput = document.getElementById('order-id');
+        const orderSummaryTextarea = document.getElementById('order-summary');
+
+        // Function to generate QR code
+        function generateQrCode(data) {
+            // Clear previous QR code by re-initializing QRCode on the canvas
+            // qrcode.js needs a div element to attach to, not a canvas directly.
+            // We'll create a temporary div for it.
+            let qrContainer = document.createElement('div');
+            qrContainer.id = 'qrcode-container-temp';
+            qrCanvas.parentNode.insertBefore(qrContainer, qrCanvas.nextSibling); // Insert after canvas
+
+            // Remove the old canvas if it was used directly by qrcode.js before
+            if (qrCanvas.dataset.qrcodeInstance) {
+                delete qrCanvas.dataset.qrcodeInstance; // Remove reference
+                qrCanvas.remove(); // Remove the old canvas element
+                qrCanvas = document.createElement('canvas'); // Recreate canvas
+                qrCanvas.id = 'qr-canvas';
+                qrCanvas.style.display = 'none';
+                document.getElementById('qrcode-output').prepend(qrCanvas); // Add back to output div
+            }
+
+            new QRCode(qrContainer, { // Attach qrcode.js to the new div
+                text: data,
+                width: 256,
+                height: 256,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+
+            // After QR code is generated in qrContainer, grab the canvas from it
+            // and replace the original qrCanvas with it.
+            const generatedCanvas = qrContainer.querySelector('canvas');
+            if (generatedCanvas) {
+                qrCanvas.replaceWith(generatedCanvas); // Replace the placeholder canvas with the generated one
+                generatedCanvas.id = 'qr-canvas'; // Ensure it has the correct ID
+                generatedCanvas.style.display = 'block'; // Show the generated canvas
+                qrCanvas = generatedCanvas; // Update qrCanvas reference
+            }
+            qrContainer.remove(); // Remove the temporary container div
+
+
+            // Make download button visible and set its href
+            downloadBtn.style.display = 'block';
+            setTimeout(() => { // Small delay to ensure canvas is rendered
+                downloadBtn.href = qrCanvas.toDataURL("image/png");
+            }, 100);
+        }
+
+        // Check if order_data is passed from Flask (automatic generation)
+        // Use JSON.parse to correctly interpret the JSON string from tojson filter
+        const initialOrderDataJson = "{{ order_data | tojson }}";
+        let initialOrderData = null;
+        if (initialOrderDataJson && initialOrderDataJson.trim() !== "null") {
+            initialOrderData = JSON.parse(initialOrderDataJson);
+        }
+        
+        const initialOrderId = "{{ order_id | tojson }}";
+        let parsedOrderId = null;
+        if (initialOrderId && initialOrderId.trim() !== "null") {
+            parsedOrderId = JSON.parse(initialOrderId);
+        }
+
+
+        if (initialOrderData && initialOrderData.trim() !== "") {
+            generateQrCode(initialOrderData);
+            // Hide the manual form if data was pre-filled
+            manualForm.style.display = 'none';
+            document.getElementById('qrcode-output').style.display = 'block'; // Ensure output is visible
+        } else {
+            // If no data, ensure manual form is visible (default state)
+            manualForm.style.display = 'block';
+            // Also hide QR output section initially if no data
+            document.getElementById('qrcode-output').style.display = 'none';
+        }
+
+        // Set initial values for manual form if they exist
+        if (parsedOrderId) {
+            orderIdInput.value = parsedOrderId;
+        }
+        if (initialOrderData) {
+            orderSummaryTextarea.value = initialOrderData;
+        }
+
+
+        // Event listener for manual QR code generation
+        manualGenerateBtn.addEventListener('click', function() {
+            const orderId = orderIdInput.value;
+            const orderSummary = orderSummaryTextarea.value;
+
+            if (orderId && orderSummary) {
+                const qrData = `Order ID: ${orderId}\nSummary: ${orderSummary}\nGenerated: ${new Date().toLocaleString()}`;
+                generateQrCode(qrData);
+                // Ensure QR output section is visible after manual generation
+                document.getElementById('qrcode-output').style.display = 'block';
+            } else {
+                alert('Please enter both Order ID and Order Summary for manual generation.');
+            }
+        });
+    });
+</script>
+{% endblock %}
